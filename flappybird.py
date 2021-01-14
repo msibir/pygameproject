@@ -8,7 +8,7 @@ import os
 
 
 def load_image(name, color_key=None):
-    fullname = os.path.join('data', name)
+    fullname = os.path.join(name)
     try:
         image = pygame.image.load(fullname).convert()
     except pygame.error as message:
@@ -234,8 +234,8 @@ if __name__ == '__main__':
     CHANGESPRITE = pygame.USEREVENT + 2
     pygame.time.set_timer(CHANGESPRITE, 100)
     menu()
-    bonussaund = pygame.mixer.Sound("data/bonus.mp3")
-    failsound = pygame.mixer.Sound("data/fail.mp3")
+    bonussaund = pygame.mixer.Sound("bonus.mp3")
+    failsound = pygame.mixer.Sound("fail.mp3")
 
     running = True
     started = False
