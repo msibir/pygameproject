@@ -1,0 +1,7 @@
+Сторонние модификации:
+
+pygame
+Box2D
+sys
+random
+os

@@ -8,6 +8,7 @@ import os
 
 
 def load_image(name, color_key=None):
+    """Загрузка спрайта"""
     fullname = os.path.join(name)
     try:
         image = pygame.image.load(fullname).convert()
@@ -25,15 +26,19 @@ def load_image(name, color_key=None):
 
 
 def my_draw_polygon(polygon, body, fixture):
+    """Необходимая для Box2D функция"""
     pass
 
 
 def my_draw_circle(circle, body, fixture):
+    """Необходимая для Box2D функция"""
     pass
 
 
 class Bird(pygame.sprite.Sprite):
+    """Класс птицы, содержащий физику и отрисовку анимации"""
     def __init__(self, all_sprites):
+        """Инициализация объекта"""
         super().__init__(all_sprites)
         self.body = world.CreateDynamicBody(position=(5, 20))
         circle = self.body.CreateCircleFixture(radius=1, density=1, friction=0, categoryBits=3, maskBits=2)
@@ -48,21 +53,26 @@ class Bird(pygame.sprite.Sprite):
         self.mask = pygame.mask.from_surface(self.image)
 
     def update(self):
+        """Находит местоположение птицы и отрисовывает спрайт"""
         self.rect.x = self.body.position[0] * PPM - 20
         self.rect.y = SCREEN_HEIGHT - self.body.position[1] * PPM - 20
 
     def jump(self):
+        """Функция прыжка"""
         self.body.linearVelocity = b2Vec2(0, 0)
         self.body.ApplyLinearImpulse(b2Vec2(0, 40), self.body.position, True)
 
     def animation(self):
+        """Изменение анимации"""
         self.an += 1
         self.an %= 4
         self.image = self.sprites[self.an]
 
 
 class Post(pygame.sprite.Sprite):
+    """Класс столба, содержащий физику и отрисовку"""
     def __init__(self, all_sprites, y):
+        """Инициализация объекта"""
         super().__init__(all_sprites)
         self.y = y
         self.post = world.CreateDynamicBody(position=(33, 40), shapes=polygonShape(box=(3, y)),
@@ -76,6 +86,7 @@ class Post(pygame.sprite.Sprite):
         self.wascount = False
 
     def update(self):
+        """Находит местоположение столба, отслеживает столкновения и отрисовывает спрайт"""
         global score
         self.rect.x = self.post.position[0] * PPM - 60
         if self.rect.x < -60:
@@ -90,7 +101,9 @@ class Post(pygame.sprite.Sprite):
 
 
 class BottomPost(pygame.sprite.Sprite):
+    """Класс столба, содержащий физику и отрисовку"""
     def __init__(self, all_sprites, y, post):
+        """Инициализация объекта"""
         super().__init__(all_sprites)
         self.y = y
         self.post1 = post
@@ -104,6 +117,7 @@ class BottomPost(pygame.sprite.Sprite):
         self.mask = pygame.mask.from_surface(self.image)
 
     def update(self):
+        """Находит местоположение столба, отслеживает столкновения и отрисовывает спрайт"""
         self.post.position[0] = self.post1.post.position[0]
         self.rect.x = self.post.position[0] * PPM - 60
         if self.rect.x < -60:
@@ -114,7 +128,9 @@ class BottomPost(pygame.sprite.Sprite):
 
 
 class Ground(pygame.sprite.Sprite):
+    """Класс земли, содержащий физику и отрисовку"""
     def __init__(self, all_sprites):
+        """Инициализация объекта"""
         super().__init__(all_sprites)
         ground_body = world.CreateStaticBody(position=(0, 0), shapes=polygonShape(box=(30, 5)))
         self.image = load_image("ground.jpg")
@@ -122,12 +138,14 @@ class Ground(pygame.sprite.Sprite):
         self.mask = pygame.mask.from_surface(self.image)
 
     def update(self):
+        """Отрисовывает объект и отслеживает столкновения"""
         if pygame.sprite.collide_mask(self, bird):
             failsound.play()
             lose()
 
 
 class Plume(pygame.sprite.Sprite):
+    """Класс пера (бонус)"""
     def __init__(self, all_sprites, y, post):
         super().__init__(all_sprites)
         self.post1 = post
@@ -138,6 +156,7 @@ class Plume(pygame.sprite.Sprite):
         self.mask = pygame.mask.from_surface(self.image)
 
     def update(self):
+        """Находит местоположение пера, отслеживает столкновения и отрисовывает спрайт"""
         global score
         self.post.position[0] = self.post1.post.position[0] + 0.5
         self.rect.x = self.post.position[0] * PPM - 60
@@ -147,8 +166,8 @@ class Plume(pygame.sprite.Sprite):
 
 
 def start():
+    """Начинает новую игру"""
     global started, running, losed
-    print(score)
     for i in postsprites:
         i.kill()
     bird.body.linearVelocity = b2Vec2(0, 0)
@@ -160,15 +179,18 @@ def start():
 
 
 def lose():
+    """Начинает новую игру"""
     start()
 
 
 def terminate():
+    """Закрывает окно"""
     pygame.quit()
     sys.exit()
 
 
 def menu():
+    """Открывает меню"""
     global background, background_rect
     TARGET_FPS = 60
     PPM = 20
@@ -192,6 +214,7 @@ def menu():
 
 
 def get_best_score(n):
+    """Получает лучший счет из bestscore.txt"""
     with open("bestscore.txt", "r") as r:
         best = int(r.readline())
     if n > best:
@@ -203,6 +226,7 @@ def get_best_score(n):
 
 
 if __name__ == '__main__':
+    pygame.init()
     pygame.font.init()
     pygame.display.init()
     pygame.mixer.init()
